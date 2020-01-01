@@ -25,7 +25,19 @@ export async function loadMetadataJson(url: string):
   const HTTP_SCHEME = 'http://';
   const HTTPS_SCHEME = 'https://';
   const FILE_SCHEME = 'file://';
-  if (url.indexOf(HTTP_SCHEME) === 0 || url.indexOf(HTTPS_SCHEME) === 0) {
+
+  const isNode = (function(){
+    return (
+      typeof module !== 'undefined' && module.exports && require
+    )
+  })()
+
+  if (
+    (url.indexOf(HTTP_SCHEME) === 0 || url.indexOf(HTTPS_SCHEME) === 0) ||
+    // file_scheme url outside of node ( ex. puppeteer )
+    (!isNode && url.indexOf(FILE_SCHEME) === 0)
+  )
+  {
     const response = await fetch(url);
     const parsed = await response.json();
     return parsed;
